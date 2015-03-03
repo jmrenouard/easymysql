@@ -1,5 +1,5 @@
 #!/bin/sh
-#The Artistic License 2.0
+#				The Artistic License 2.0
 #
 #           Copyright (c) 2015 Jean-Marie Renouard
 #
@@ -11,10 +11,12 @@ TYPE=mysql
 GENERAL_OPTIONS="--log-bin=mysql-bin --explicit_defaults_for_timestamp --plugin-dir=/usr/lib64/mysql/plugin"
 MUSER=mysql
 
-CLONE_SQL='GRANT ALL PRIVILEGES ON *.* TO "clone"@"localhost" IDENTIFIED BY "clone";FLUSH PRIVILEGES;'
+CLONE_SQL='GRANT ALL PRIVILEGES ON *.* TO "clone"@"%" IDENTIFIED BY "clone" WITH GRANT OPTION;FLUSH PRIVILEGES;'
 msetup()
 {
-	mysql -h$(myip) $@ -e "$CLONE_SQL" 2>/dev/null
+	ID=${1:-""}
+	SOCK=/var/lib/mysql${ID}/mysql.sock
+	mysql -S$SOCK $@ -e "$CLONE_SQL" 2>/dev/null
 }
 
 mclone()
@@ -28,9 +30,10 @@ mclone()
 	[ -z "$2" ] || CLONE_PORT=$((3306+CLONE_ID))
 	
 	mkdir -p $DATADIR; 
-	chown -R ${USER}. $DATADIR
+	chown -R ${MUSER}. $DATADIR
+	SOCK=/var/lib/mysql${ID}/mysql.sock
 	su - $MUSER -c "mysqlserverclone --server=clone:clone@localhost:$CLONE_PORT --new-data=$DATADIR --new-id=$ID --new-port=$PORT --root-password=admin --verbose --mysqld='$GENERAL_OPTIONS'"
-	msetup -P$PORT -uroot -padmin
+	msetup -S$SOCK -uclone -pclone
 }
 
 mdestroy()
@@ -43,17 +46,14 @@ mdestroy()
 
 mstart() 
 {
-	set -x
 	ID=${1:-"1"}
 	DATADIR=$ROOT_DIR/${TYPE}${ID}
 	PORT=$((3306+ID))
 	su - $MUSER -c "nohup /usr/sbin/mysqld --no-defaults --datadir=$DATADIR --tmpdir=$DATADIR --pid-file=$DATADIR/clone.pid --port=$PORT --server-id=$ID --basedir=/usr --socket=$DATADIR/mysql.sock $GENERAL_OPTIONS --log-error=$DATADIR/mysqld.log" &
-	set +x
 }
 
 mstop()
 {
-	set -x
 	ID=${1:-"1"}
 	DATADIR=$ROOT_DIR/${TYPE}${ID}
 	PORT=$((3306+ID))
@@ -61,11 +61,11 @@ mstop()
 	FILE_PID=$(cat $DATADIR/clone.pid 2>/dev/null)
 
 	if [ "$PS_PID" = "$FILE_PID" ]; then
-		mysqladmin -uclone -pclone -P$PORT shutdown 	
+		SOCK=/var/lib/mysql${ID}/mysql.sock
+		mysqladmin -uclone -pclone -S$SOCK shutdown 	
 	fi
 	kill -9 $PS_PID 2>/dev/null
 	rm -f $DATADIR/{clone.pid,mysqld.log,mysql.sock}
-set +x
 }
 
 mstatus() 
@@ -93,12 +93,12 @@ mstatus()
 mclient()
 {
 	set -x
-	ID=${1:-"1"}
+	ID=${1:-"0"}
 	PORT=$((3306+ID))
 	shift
-	DATADIR=/var/lib/mysql${ID}
-	mysql -uclone -pclone -P$PORT -h $(myip) $@
-set +x
+	SOCK=/var/lib/mysql${ID}/mysql.sock
+	mysql -uclone -pclone -S$SOCK $@
+	set +x
 }
 
 myip()
