@@ -1,17 +1,18 @@
 # Easymysql #
-**Helper Bash script for MySQL current operations**
+**Helper Bash script for MySQL multi instance management on one server**
 
 # Purpose #
  This tools is a simple Bash script that help you to
- ** clone and manage several MySQL server instances ** on the same server. 
+**clone and manage several MySQL server instances** 
+on the same server. 
  It supports 6 main features:
 
 - clone
--  destroy
--  start
--  stop
--  restart    
--  status
+- destroy
+- start
+- stop
+- restart    
+- status
       
 # Prerequirements #
 1. Use a standard Linux and Bash shell
@@ -59,6 +60,44 @@ This parameters are set at the begin of mysql_functions.sh script.
 
 ## Include Configuration Directory ##
     ETC_DIR=/etc/my.cnf.d/
+
+# Basic concepts #
+## Server Identifier ##
+**Identifier** is the only concept your really need to handle all instances.
+
+For example, MySQL instance with id=x gets the following properties:
+
+1. Port: 3306+X
+2. Datadir: /var/lib/mysql + X
+3. Server id: X
+4. Socket: Datadir/mysqlX.sock
+
+## Main functions ##
+
+- Clone a existing and running instance
+    
+        mclone < ID DESTINATION > [ < ID SOURCE > ]
+
+- Start one or several MySQL instance
+ 
+        mstart < ID1 > [ < ID2 > ] [ < ID3 > ] ...
+
+- Stop one or several MySQL instance
+ 
+        mstart < ID1 > [ < ID2 > ] [ < ID3 > ] ...
+
+- Restart one or several MySQL instance
+ 
+        mrestart < ID1 > [ < ID2 > ] [ < ID3 > ] ...
+
+- Get status of one, several or all MySQL instances
+
+        mstatus [ < ID1 > ] [ < ID2 > ] ...
+
+- Destroy one or several MySQL instance
+
+        mdestroy < ID1 > [ < ID2 > ] [ < ID3 > ] ...
+
 
 # Examples #
 ## Cloning a instance standard 3306 instance ##
@@ -132,4 +171,24 @@ This parameters are set at the begin of mysql_functions.sh script.
 ## Destroying 10 MySQL instances ##
 	# source mysql_functions.sh
     # mdestroy `seq 1 10`
-    
+
+## Getting a mysql client on MySQL instances 7 ##
+	# source mysql_functions.sh
+    # mclient 7
+    mysql> ...
+
+## Requesting from a mysql client on MySQL instances 4 ##
+	# source mysql_functions.sh
+    # mclient 4 select @@server_id
+    @@server_id
+    4
+
+# Support easymysql script #
+## Bugs report ##
+  [https://github.com/jmrenouard/easymysql/issues](https://github.com/jmrenouard/easymysql/issues "Fill an issue")
+
+## Pull request ##
+  [https://github.com/jmrenouard/easymysql/pulls](https://github.com/jmrenouard/easymysql/pulls "Pull Request")
+
+## Send an email ##
+  jmrenouard@gmail.com
