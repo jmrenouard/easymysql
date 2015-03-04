@@ -4,13 +4,14 @@
 # Purpose #
  This tools is a simple Bash script that help you to
  clone MySQL server. 
- It supports 6 main features: 
-    - clone
-    - destroy
-    - start
-    - stop
-    - restart
-    -  status
+ It supports 6 main features:
+
+- clone
+-  destroy
+-  start
+-  stop
+-  restart    
+-  status
       
 # Prerequirements #
 1. Use a standard Linux and Bash shell
