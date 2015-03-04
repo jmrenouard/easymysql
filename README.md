@@ -3,7 +3,7 @@
 
 # Purpose #
  This tools is a simple Bash script that help you to
- clone MySQL server. 
+ ** clone and manage several MySQL server instances ** on the same server. 
  It supports 6 main features:
 
 - clone
@@ -60,3 +60,76 @@ This parameters are set at the begin of mysql_functions.sh script.
 ## Include Configuration Directory ##
     ETC_DIR=/etc/my.cnf.d/
 
+# Examples #
+## Cloning a instance standard 3306 instance ##
+    # source mysql_functions.sh
+    # mclone 1
+
+## Cloning MySQL instance 1 port 3307 ##
+    # source mysql_functions.sh
+    # mclone 2 1
+
+## Destroying MySQL instance 2 ##
+    # source mysql_functions.sh
+    # mdestroy 2
+
+## Getting the status of all MySQL instances ##
+    # source mysql_functions.sh
+    # mstatus
+	ID      DIRECTORY       PORT    STATUS  PID
+	PRI     /var/lib/mysql  3306    ON      2144
+	1       /var/lib/mysql1 3307    ON      3029
+	2       /var/lib/mysql2 3308    ON      3048
+
+## Stopping MySQL instance 2 ##
+	# source mysql_functions.sh
+    # mstop 2
+    # mstatus
+	ID      DIRECTORY       PORT    STATUS  PID
+	PRI     /var/lib/mysql  3306    ON      2144
+	1       /var/lib/mysql1 3307    ON      3029
+	2       /var/lib/mysql2 3308    OFF
+	
+## Starting MySQL instance 2 ##
+	# source mysql_functions.sh
+    # mstart 2
+    # mstatus
+	ID      DIRECTORY       PORT    STATUS  PID
+	PRI     /var/lib/mysql  3306    ON      2144
+	1       /var/lib/mysql1 3307    ON      3029
+	2       /var/lib/mysql2 3308    ON      3049
+
+## Restarting MySQL instances 1 2 ##
+	# source mysql_functions.sh
+    # mrestart 1 2
+    # mstatus
+	ID      DIRECTORY       PORT    STATUS  PID
+	PRI     /var/lib/mysql  3306    ON      2144
+	1       /var/lib/mysql1 3307    ON      3029
+	2       /var/lib/mysql2 3308    ON      3049
+
+## Creating  10 MySQL instances at once ##
+	# source mysql_functions.sh
+    # for i in `seq 1 10`; do mclone $i; done
+    # mstatus
+	ID      DIRECTORY       PORT    STATUS  PID
+	PRI     /var/lib/mysql  3306    ON      2144
+	1       /var/lib/mysql1 3307    ON      3029
+	10      /var/lib/mysql10        3316    ON      4018
+	2       /var/lib/mysql2 3308    ON      3048
+	3       /var/lib/mysql3 3309    ON      3562
+	4       /var/lib/mysql4 3310    ON      3627
+	5       /var/lib/mysql5 3311    ON      3692
+	6       /var/lib/mysql6 3312    ON      3757
+	7       /var/lib/mysql7 3313    ON      3822
+	8       /var/lib/mysql8 3314    ON      3887
+	9       /var/lib/mysql9 3315    ON      3952
+
+## Stopping 10 first MySQL instances ##
+	# source mysql_functions.sh
+    # mstart `seq 1 10`
+
+## Destroying 10 MySQL instances ##
+	# source mysql_functions.sh
+    # mdestroy `seq 1 10`
+    
