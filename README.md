@@ -1,7 +1,17 @@
 # Easymysql #
 **Helper Bash script for MySQL current operations**
 
-
+# Purpose #
+ This tools is a simple Bash script that help you to
+ clone MySQL server. 
+ It supports 6 main features: 
+    - clone
+    - destroy
+    - start
+    - stop
+    - restart
+    -  status
+      
 # Prerequirements #
 1. Use a standard Linux and Bash shell
     - [http://www.linux.com/directory/Distributions](http://www.linux.com/directory/Distributions "Linux Distibution")
@@ -23,23 +33,29 @@
 
 
 ## Setup ##
-
+    # source mysql_functions.sh
 
 # Specific configurations #
 
-##
-ROOT_DIR=/var/lib
+This parameters are set at the begin of mysql_functions.sh script.
+## Root Directory for all instances
+    ROOT_DIR=/var/lib
 
+## Type of servers ##
+    TYPE=mysql
 
-TYPE=mysql
+## General options for all instances ##
+    GENERAL_OPTIONS="--log-bin=mysql-bin --pid-file=clone.pid --explicit_defaults_for_timestamp --plugin-dir=/usr/lib64/mysql/plugin"
 
-GENERAL_OPTIONS="--log-bin=mysql-bin --pid-file=clone.pid --explicit_defaults_for_timestamp --plugin-dir=/usr/lib64/mysql/plugin"
+## User used for running mysqld process ##
+    MUSER=mysql
 
-MUSER=mysql
+## Password used for root user in all instances ##
+    RPASSWORD=admin
 
-RPASSWORD=admin
+## Main MySQL configuration file ##
+    MAIN_CFG_FILE=/etc/my.cnf
 
-MAIN_CFG_FILE=/etc/my.cnf
-
-ETC_DIR=/etc/my.cnf.d/
+## Include Configuration Directory ##
+    ETC_DIR=/etc/my.cnf.d/
 
